@@ -91,3 +91,51 @@ func TestTrivyInDocker(t *testing.T) {
 		t.Error("expected trivy job in docker.yml")
 	}
 }
+
+func TestPRBodyGo(t *testing.T) {
+	s := stack("go", "go", false, false, true, true, true, "codeql")
+	files := []GeneratedFile{
+		{Path: "ci.yml"},
+		{Path: "security.yml"},
+		{Path: "lint.yml"},
+		{Path: "test.yml"},
+	}
+	body := PRBody(s, files)
+	if !strings.Contains(body, "go") {
+		t.Error("expected language in PR body")
+	}
+	if !strings.Contains(body, "ci.yml") {
+		t.Error("expected ci.yml in PR body")
+	}
+}
+
+func TestPRBodyWithDocker(t *testing.T) {
+	s := stack("node", "npm", true, false, true, true, true, "codeql")
+	files := []GeneratedFile{
+		{Path: "ci.yml"},
+		{Path: "security.yml"},
+		{Path: "lint.yml"},
+		{Path: "test.yml"},
+		{Path: "docker.yml"},
+	}
+	body := PRBody(s, files)
+	if !strings.Contains(body, "Docker") {
+		t.Error("expected Docker in PR body")
+	}
+}
+
+func TestPRBodyWithK8s(t *testing.T) {
+	s := stack("go", "go", true, true, true, true, true, "codeql")
+	files := []GeneratedFile{
+		{Path: "ci.yml"},
+		{Path: "security.yml"},
+		{Path: "lint.yml"},
+		{Path: "test.yml"},
+		{Path: "docker.yml"},
+		{Path: "k8s-deploy.yml"},
+	}
+	body := PRBody(s, files)
+	if !strings.Contains(body, "Kubernetes") {
+		t.Error("expected Kubernetes in PR body")
+	}
+}
