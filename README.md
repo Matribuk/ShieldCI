@@ -1,0 +1,66 @@
+# ShieldCI
+
+> GitHub Action that auto-generates hardened CI/CD DevSecOps pipelines and opens a PR with the generated workflows.
+
+[![CI](https://github.com/Richonn/ShieldCI/actions/workflows/ci.yml/badge.svg)](https://github.com/Richonn/ShieldCI/actions/workflows/ci.yml)
+
+## Quick start
+
+```yaml
+- uses: Richonn/ShieldCI@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+ShieldCI will detect your stack, generate the appropriate workflows, and open a PR.
+
+## Inputs
+
+| Input | Required | Default | Description |
+|---|---|---|---|
+| `github-token` | ✅ | — | Token for creating branches and PRs |
+| `language` | ❌ | `auto` | Language override: `node`, `python`, `java`, `go`, `auto` |
+| `docker` | ❌ | `auto` | Docker detection: `true`, `false`, `auto` |
+| `kubernetes` | ❌ | `false` | Include K8s deploy workflow |
+| `enable-trivy` | ❌ | `true` | Add Trivy image scan job |
+| `enable-gitleaks` | ❌ | `true` | Add Gitleaks secret scan job |
+| `enable-sast` | ❌ | `true` | Add SAST job (CodeQL or Semgrep) |
+| `sast-tool` | ❌ | `codeql` | SAST tool: `codeql` or `semgrep` |
+| `branch-name` | ❌ | `shieldci/generated-workflows` | Branch to push generated workflows to |
+| `pr-title` | ❌ | `[ShieldCI] Add CI/CD DevSecOps pipeline` | PR title |
+
+## Outputs
+
+| Output | Description |
+|---|---|
+| `pr-url` | URL of the created pull request |
+| `detected-stack` | Detected stack as JSON |
+| `generated-files` | Newline-separated list of generated file paths |
+
+## Supported stacks
+
+| Language | CI | Lint | Test | Build |
+|---|---|---|---|---|
+| Go | ✅ | golangci-lint | go test -race | go build |
+| Node.js | ✅ | eslint | jest | npm/yarn build |
+| Python | ✅ | ruff | pytest | build/poetry |
+| Java | ✅ | — | mvn/gradle | mvn/gradle |
+
+Docker and Kubernetes workflows are generated automatically when detected.
+
+## Security tools
+
+- **Gitleaks** — secret detection in git history
+- **Trivy** — container vulnerability scanning with SARIF upload to GitHub Security tab
+- **CodeQL / Semgrep** — static analysis (SAST)
+
+## Roadmap
+
+- [ ] Rust support
+- [ ] Monorepo support
+- [ ] `--dry-run` mode
+- [ ] SBOM via Syft
+
+## License
+
+MIT
