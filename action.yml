@@ -1,0 +1,71 @@
+name: 'ShieldCI'
+description: 'Auto-generates hardened CI/CD DevSecOps pipelines and opens a PR'
+author: 'Richonn'
+
+branding:
+  icon: zap
+  color: orange
+
+inputs:
+  github-token:
+    description: 'GitHub token for creating branches and PRs'
+    required: true
+  language:
+    description: 'Language override: node|python|java|go|auto'
+    required: false
+    default: 'auto'
+  docker:
+    description: 'Docker detection: true|false|auto'
+    required: false
+    default: 'auto'
+  kubernetes:
+    description: 'Include K8s deploy workflow'
+    required: false
+    default: 'false'
+  enable-trivy:
+    description: 'Add Trivy image scan job'
+    required: false
+    default: 'true'
+  enable-gitleaks:
+    description: 'Add Gitleaks secret scan job'
+    required: false
+    default: 'true'
+  enable-sast:
+    description: 'Add SAST job'
+    required: false
+    default: 'true'
+  sast-tool:
+    description: 'SAST tool: codeql|semgrep'
+    required: false
+    default: 'codeql'
+  branch-name:
+    description: 'Branch to push generated workflows to'
+    required: false
+    default: 'shieldci/generated-workflows'
+  pr-title:
+    description: 'Title for the created PR'
+    required: false
+    default: '[ShieldCI] Add CI/CD DevSecOps pipeline'
+
+outputs:
+  pr-url:
+    description: 'URL of the created pull request'
+  detected-stack:
+    description: 'Detected stack as JSON'
+  generated-files:
+    description: 'Newline-separated list of generated file paths'
+
+runs:
+  using: docker
+  image: Dockerfile
+  env:
+    GITHUB_TOKEN: ${{ inputs.github-token }}
+    INPUT_LANGUAGE: ${{ inputs.language }}
+    INPUT_DOCKER: ${{ inputs.docker }}
+    INPUT_KUBERNETES: ${{ inputs.kubernetes }}
+    INPUT_ENABLE_TRIVY: ${{ inputs.enable-trivy }}
+    INPUT_ENABLE_GITLEAKS: ${{ inputs.enable-gitleaks }}
+    INPUT_ENABLE_SAST: ${{ inputs.enable-sast }}
+    INPUT_SAST_TOOL: ${{ inputs.sast-tool }}
+    INPUT_BRANCH_NAME: ${{ inputs.branch-name }}
+    INPUT_PR_TITLE: ${{ inputs.pr-title }}

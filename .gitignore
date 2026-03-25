@@ -1,0 +1,4 @@
+shieldci
+dist/
+*.test
+coverage.out
