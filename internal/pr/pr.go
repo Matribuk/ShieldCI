@@ -114,8 +114,11 @@ func ensureLabels(ctx context.Context, client *github.Client, owner, repo string
 
 func buildResult(prURL string, stack *detect.StackConfig, files []generate.GeneratedFile) *PRResult {
 	filesList := ""
-	for _, f := range files {
-		filesList += ".github/workflows/" + f.Path + "\n"
+	for i, f := range files {
+		if i > 0 {
+			filesList += ","
+		}
+		filesList += ".github/workflows/" + f.Path
 	}
 	stackJSON := fmt.Sprintf(`{"language":"%s","docker":%t,"k8s":%t}`,
 		stack.Language, stack.HasDocker, stack.HasK8s)
