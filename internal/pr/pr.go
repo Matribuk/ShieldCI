@@ -29,12 +29,6 @@ func CreateOrUpdatePR(ctx context.Context, cfg *config.Config,
 	}
 	baseSHA := ref.Object.GetSHA()
 
-	baseCommit, _, err := client.Git.GetCommit(ctx, owner, repo, baseSHA)
-	if err != nil {
-		return nil, fmt.Errorf("get base commit: %w", err)
-	}
-	baseTreeSHA := baseCommit.Tree.GetSHA()
-
 	branchRef := "refs/heads/" + cfg.BranchName
 	_, _, err = client.Git.GetRef(ctx, owner, repo, branchRef)
 	if err != nil {
@@ -47,43 +41,11 @@ func CreateOrUpdatePR(ctx context.Context, cfg *config.Config,
 		}
 	}
 
-	var treeEntries []*github.TreeEntry
 	for _, f := range files {
-		blob, _, err := client.Git.CreateBlob(ctx, owner, repo, &github.Blob{
-			Content:  github.String(string(f.Content)),
-			Encoding: github.String("utf-8"),
-		})
-		if err != nil {
-			return nil, fmt.Errorf("create blob for %s: %w", f.Path, err)
+		filePath := ".github/workflows/" + f.Path
+		if err := upsertFile(ctx, client, owner, repo, filePath, cfg.BranchName, f.Content); err != nil {
+			return nil, fmt.Errorf("upsert %s: %w", filePath, err)
 		}
-		treeEntries = append(treeEntries, &github.TreeEntry{
-			Path: github.String(".github/workflows/" + f.Path),
-			Mode: github.String("100644"),
-			Type: github.String("blob"),
-			SHA:  blob.SHA,
-		})
-	}
-
-	tree, _, err := client.Git.CreateTree(ctx, owner, repo, baseTreeSHA, treeEntries)
-	if err != nil {
-		return nil, fmt.Errorf("create tree: %w", err)
-	}
-
-	commit, _, err := client.Git.CreateCommit(ctx, owner, repo, &github.Commit{
-		Message: github.String("chore: add ShieldCI generated workflows"),
-		Tree:    tree,
-		Parents: []*github.Commit{{SHA: github.String(baseSHA)}},
-	}, nil)
-	if err != nil {
-		return nil, fmt.Errorf("create commit: %w", err)
-	}
-
-	_, _, err = client.Git.UpdateRef(ctx, owner, repo, &github.Reference{
-		Ref:    github.String(branchRef),
-		Object: &github.GitObject{SHA: commit.SHA},
-	}, true)
-	if err != nil {
-		return nil, fmt.Errorf("update branch ref: %w", err)
 	}
 
 	prURL, err := createOrGetPR(ctx, client, owner, repo, cfg, prBody)
@@ -92,9 +54,27 @@ func CreateOrUpdatePR(ctx context.Context, cfg *config.Config,
 	}
 
 	ensureLabels(ctx, client, owner, repo)
-	addLabels(ctx, client, owner, repo, prURL)
 
 	return buildResult(prURL, stack, files), nil
+}
+
+func upsertFile(ctx context.Context, client *github.Client, owner, repo, path, branch string, content []byte) error {
+	opts := &github.RepositoryContentFileOptions{
+		Message: github.String("chore: add ShieldCI generated workflows"),
+		Content: content,
+		Branch:  github.String(branch),
+	}
+
+	existing, _, _, _ := client.Repositories.GetContents(ctx, owner, repo, path,
+		&github.RepositoryContentGetOptions{Ref: branch})
+	if existing != nil {
+		opts.SHA = existing.SHA
+		_, _, err := client.Repositories.UpdateFile(ctx, owner, repo, path, opts)
+		return err
+	}
+
+	_, _, err := client.Repositories.CreateFile(ctx, owner, repo, path, opts)
+	return err
 }
 
 func createOrGetPR(ctx context.Context, client *github.Client, owner,
@@ -130,10 +110,6 @@ func ensureLabels(ctx context.Context, client *github.Client, owner, repo string
 			Color: github.String(l.color),
 		})
 	}
-}
-
-func addLabels(ctx context.Context, client *github.Client, owner, repo, prURL string) {
-	// plus tard
 }
 
 func buildResult(prURL string, stack *detect.StackConfig, files []generate.GeneratedFile) *PRResult {
