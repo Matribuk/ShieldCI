@@ -29,6 +29,12 @@ func CreateOrUpdatePR(ctx context.Context, cfg *config.Config,
 	}
 	baseSHA := ref.Object.GetSHA()
 
+	baseCommit, _, err := client.Git.GetCommit(ctx, owner, repo, baseSHA)
+	if err != nil {
+		return nil, fmt.Errorf("get base commit: %w", err)
+	}
+	baseTreeSHA := baseCommit.Tree.GetSHA()
+
 	branchRef := "refs/heads/" + cfg.BranchName
 	_, _, err = client.Git.GetRef(ctx, owner, repo, branchRef)
 	if err != nil {
@@ -58,7 +64,7 @@ func CreateOrUpdatePR(ctx context.Context, cfg *config.Config,
 		})
 	}
 
-	tree, _, err := client.Git.CreateTree(ctx, owner, repo, baseSHA, treeEntries)
+	tree, _, err := client.Git.CreateTree(ctx, owner, repo, baseTreeSHA, treeEntries)
 	if err != nil {
 		return nil, fmt.Errorf("create tree: %w", err)
 	}
