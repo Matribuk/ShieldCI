@@ -60,7 +60,7 @@ func CreateOrUpdatePR(ctx context.Context, cfg *config.Config,
 
 func upsertFile(ctx context.Context, client *github.Client, owner, repo, path, branch string, content []byte) error {
 	opts := &github.RepositoryContentFileOptions{
-		Message: github.String("chore: add ShieldCI generated workflows"),
+		Message: github.String("chore: add ShieldCI generated workflows [skip ci]"),
 		Content: content,
 		Branch:  github.String(branch),
 	}
