@@ -26,9 +26,9 @@ type Config struct {
 func Load() (*Config, error) {
 	c := &Config{}
 
-	c.GithubToken = os.Getenv("GITHUB_TOKEN")
+	c.GithubToken = os.Getenv("SHIELDCI_TOKEN")
 	if c.GithubToken == "" {
-		return nil, fmt.Errorf("GITHUB_TOKEN is required")
+		return nil, fmt.Errorf("SHIELDCI_TOKEN is required")
 	}
 
 	c.Language = getEnvDefault("INPUT_LANGUAGE", "auto")

@@ -59,7 +59,7 @@ runs:
   using: docker
   image: Dockerfile
   env:
-    GITHUB_TOKEN: ${{ inputs.github-token }}
+    SHIELDCI_TOKEN: ${{ inputs.github-token }}
     INPUT_LANGUAGE: ${{ inputs.language }}
     INPUT_DOCKER: ${{ inputs.docker }}
     INPUT_KUBERNETES: ${{ inputs.kubernetes }}

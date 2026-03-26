@@ -29,7 +29,7 @@ func CreateOrUpdatePR(ctx context.Context, cfg *config.Config,
 	}
 	baseSHA := ref.Object.GetSHA()
 
-	branchRef := "refs/heads" + cfg.BranchName
+	branchRef := "refs/heads/" + cfg.BranchName
 	_, _, err = client.Git.GetRef(ctx, owner, repo, branchRef)
 	if err != nil {
 		_, _, err = client.Git.CreateRef(ctx, owner, repo, &github.Reference{
