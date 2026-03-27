@@ -1,4 +1,4 @@
-name: 'ShieldCI'
+name: 'ShieldCI — DevSecOps Pipeline Generator'
 description: 'Auto-generates hardened CI/CD DevSecOps pipelines and opens a PR'
 author: 'Richonn'
 
