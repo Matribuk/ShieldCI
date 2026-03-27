@@ -65,7 +65,7 @@ func extractPRNumber(prURL string) int {
 	var number int
 	for i := len(prURL) - 1; i >= 0; i-- {
 		if prURL[i] == '/' {
-			fmt.Sscanf(prURL[i+1:], "%d", &number)
+			_, _ = fmt.Sscanf(prURL[i+1:], "%d", &number)
 			return number
 		}
 	}
