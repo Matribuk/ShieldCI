@@ -73,6 +73,7 @@ ShieldCI will detect your stack, generate the appropriate workflows, and open a 
 | Node.js | ✅ | eslint | jest | npm/yarn build |
 | Python | ✅ | ruff | pytest | build/poetry |
 | Java | ✅ | — | mvn/gradle | mvn/gradle |
+| Rust | ✅ | cargo clippy | cargo test | cargo build |
 
 Docker and Kubernetes workflows are generated automatically when detected.
 
@@ -97,7 +98,7 @@ The Job Summary will display each generated workflow file as a fenced YAML block
 
 ## Roadmap
 
-- [ ] Rust support
+- [x] Rust support
 - [ ] Monorepo support
 - [x] `dry-run` mode
 - [ ] SBOM via Syft
