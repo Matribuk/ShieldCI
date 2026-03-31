@@ -96,11 +96,24 @@ Set `dry-run: "true"` to preview the generated workflows in the GitHub Actions J
 
 The Job Summary will display each generated workflow file as a fenced YAML block. No branch or PR is created.
 
+## Versioning
+
+ShieldCI uses a floating major tag (`v1`) that always points to the latest release in the `v1.x.x` series. This means `Richonn/ShieldCI@v1` automatically picks up new features and fixes without any change on your side.
+
+The floating tag is updated automatically via a GitHub Actions workflow on every new release.
+
+If you need reproducibility, pin to a specific version:
+
+```yaml
+- uses: Richonn/ShieldCI@v1.1.1
+```
+
 ## Roadmap
 
 - [x] Rust support
-- [ ] Monorepo support
 - [x] `dry-run` mode
+- [x] Pinned action SHAs in generated workflows
+- [ ] Monorepo support
 - [ ] SBOM via Syft
 
 ## License
