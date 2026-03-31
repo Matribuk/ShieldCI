@@ -26,6 +26,7 @@ type TemplateData struct {
 	IsPython  bool
 	IsJava    bool
 	IsGo      bool
+	IsRust    bool
 	UseYarn   bool
 	UsePnpm   bool
 	UseMaven  bool
@@ -42,6 +43,7 @@ func Generate(stack *detect.StackConfig) ([]GeneratedFile, error) {
 		IsPython:  stack.Language == "python",
 		IsJava:    stack.Language == "java",
 		IsGo:      stack.Language == "go",
+		IsRust:    stack.Language == "rust",
 		UseYarn:   stack.BuildTool == "yarn",
 		UsePnpm:   stack.BuildTool == "pnpm",
 		UseMaven:  stack.BuildTool == "mvn",
@@ -68,12 +70,14 @@ func Generate(stack *detect.StackConfig) ([]GeneratedFile, error) {
 		"python": "templates/python/lint.yml.tmpl",
 		"java":   "templates/java/lint.yml.tmpl",
 		"go":     "templates/go/lint.yml.tmpl",
+		"rust":   "templates/rust/lint.yml.tmpl",
 	}
 	langTestTemplates := map[string]string{
 		"node":   "templates/node/test.yml.tmpl",
 		"python": "templates/python/test.yml.tmpl",
 		"java":   "templates/java/test.yml.tmpl",
 		"go":     "templates/go/test.yml.tmpl",
+		"rust":   "templates/rust/test.yml.tmpl",
 	}
 
 	if tmplPath, ok := langLintTemplates[stack.Language]; ok {

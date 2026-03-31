@@ -8,28 +8,28 @@ import (
 )
 
 type StackConfig struct {
-	Language string
-	HasDocker bool
-	HasK8s bool
-	BuildTool string
-	EnableTrivy bool
+	Language       string
+	HasDocker      bool
+	HasK8s         bool
+	BuildTool      string
+	EnableTrivy    bool
 	EnableGitleaks bool
-	EnableSAST bool
-	SASTTool string
-	RepoOwner string
-	RepoName string
+	EnableSAST     bool
+	SASTTool       string
+	RepoOwner      string
+	RepoName       string
 }
 
 func Detect(cfg *config.Config) (*StackConfig, error) {
 	dir := cfg.WorkspaceDir
 
-	stack:= &StackConfig{
-		EnableTrivy: cfg.EnableTrivy,
+	stack := &StackConfig{
+		EnableTrivy:    cfg.EnableTrivy,
 		EnableGitleaks: cfg.EnableGitleaks,
-		EnableSAST: cfg.EnableSAST,
-		SASTTool: cfg.SASTTool,
-		RepoOwner: cfg.RepoOwner,
-		RepoName: cfg.RepoName,
+		EnableSAST:     cfg.EnableSAST,
+		SASTTool:       cfg.SASTTool,
+		RepoOwner:      cfg.RepoOwner,
+		RepoName:       cfg.RepoName,
 	}
 
 	if cfg.Language != "auto" {
@@ -66,12 +66,12 @@ func detectLanguage(dir string) string {
 	case fileExists(filepath.Join(dir, "package.json")):
 		return "node"
 	case fileExists(filepath.Join(dir, "requirements.txt")),
-			fileExists(filepath.Join(dir, "pyproject.toml")),
-			fileExists(filepath.Join(dir, "setup.py")):
+		fileExists(filepath.Join(dir, "pyproject.toml")),
+		fileExists(filepath.Join(dir, "setup.py")):
 		return "python"
 	case fileExists(filepath.Join(dir, "pom.xml")),
-			fileExists(filepath.Join(dir, "build.gradle")),
-			fileExists(filepath.Join(dir, "build.gradle.kts")):
+		fileExists(filepath.Join(dir, "build.gradle")),
+		fileExists(filepath.Join(dir, "build.gradle.kts")):
 		return "java"
 	case fileExists(filepath.Join(dir, "Cargo.toml")):
 		return "rust"
@@ -103,6 +103,8 @@ func detectBuildTool(dir, language string) string {
 		return "pip"
 	case "go":
 		return "go"
+	case "rust":
+		return "cargo"
 	default:
 		return ""
 	}
